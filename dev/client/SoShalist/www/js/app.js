@@ -74,6 +74,24 @@ angular.module('bucketList', ['ionic', 'bucketList.controllers', 'bucketList.ser
                     }
                 }
             })
+            .state('bucket.myprofile', {
+                url: '/myprofile',
+                views: {
+                    'bucket-profile': {
+                        templateUrl: 'templates/bucket-myprofile.html',
+                        controller: 'myProfileCtrl'
+                    }
+                }
+            })
+            .state('bucket.myprofile.edit', {
+                url: '/myprofile/edit',
+                views: {
+                    'bucket-profile-edit': {
+                        templateUrl: 'templates/bucket-myprofile-edit.html',
+                        controller: 'myProfileCtrl'
+                    }
+                }
+            })
             .state('org', {
                 url: "/org",
                 abstract: true,

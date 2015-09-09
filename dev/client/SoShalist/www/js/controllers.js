@@ -368,3 +368,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 });
         };
     })
+
+    .controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
+
+    })
