@@ -1,6 +1,6 @@
 .margin {
-    margin - left: 9px;
-    margin - right: 9px;
+    margin-left: 9px;
+    margin-right: 9px;
 }
 
 .icon-actions {
@@ -23,4 +23,13 @@
 .ion-checkmark-circled.icon-actions.margin
 {
 	margin-right: 35px;
+}
+a
+{
+    text-decoration: none;
+}
+
+.ion-arrow-left-c
+{
+    color: white;
 }

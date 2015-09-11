@@ -84,7 +84,7 @@ angular.module('bucketList', ['ionic', 'bucketList.controllers', 'bucketList.ser
                 }
             })
             .state('bucket.myprofile.edit', {
-                url: '/myprofile/edit',
+                url: '/editProfile',
                 views: {
                     'bucket-profile-edit': {
                         templateUrl: 'templates/bucket-myprofile-edit.html',
