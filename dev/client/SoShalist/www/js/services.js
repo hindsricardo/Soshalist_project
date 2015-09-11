@@ -114,6 +114,23 @@ angular.module('bucketList.services', [])
                         token: email
                     }
                 });
+            },
+            getappUser: function (session) {
+                return $http.get(base+'/api/v1/bucketList/data/user', {
+                    method: 'GET',
+                    params: {
+                        token: session
+                    }
+                })
+            },
+            getActivity: function (session) {
+                return $http.get(base+'/api/v1/bucketList/data/activity',{
+                    method: 'GET',
+                    params: {
+                        token: session
+                    }
+                })
             }
+
         }
     });

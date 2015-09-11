@@ -9,9 +9,9 @@
 <ion-content class="list card">
 
     <div class="item item-avatar">
-        <img ng-if="session.pic" src="{{session.pic}}">
-        <img ng-if="!session.pic" src="../img/Profile_avatar_placeholder_large.png">
-        <h2>Marty McFly {{session.name}}</h2>
+        <img ng-if="user.pic" src="{{user.pic}}">
+        <img ng-if="!user.pic" src="../img/Profile_avatar_placeholder_large.png">
+        <h2>Marty McFly {{user.name}}</h2>
         <div class="row">
             <a class="tab-item" href="#">
                 <i class="icon ion-calendar">5 {{total_booked}}</i>
@@ -29,7 +29,7 @@
     </div>
 
 
-    <div class="item item-body" ng-hide="noData" ng-repeat="activity in activities">
+    <div class="item item-body" ng-if="no" ng-repeat="activity in activities">
             <p>
                 <b>{{activity.type}}</b> {{activity.title}}
             </p>

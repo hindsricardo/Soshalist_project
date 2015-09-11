@@ -371,4 +371,38 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
     .controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
 
+        API.getappUser($rootScope.getToken())
+            .success(function (data, status, headers, config){
+                $scope.user = data;
+            })
+            .error(function(data, status, headers, config){
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            })
+
+        $rootScope.$on('fetchActivity', function(){
+            API.getActivity($rootScope.getToken()).success(function (data, status, headers, config) {
+                $rootScope.show("Please wait... Processing");
+                $scope.list = data;
+                /*for (var i = 0; i < data.length; i++) {
+                 if (data[i].isCompleted == false) {
+                 $scope.list.push(data[i]);
+                 }
+                 }*/
+                if($scope.list.length == 0)
+                {
+                    $scope.noData = true;
+                }
+                else
+                {
+                    $scope.noData = false;
+                }
+                $rootScope.hide();
+            }).error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+        });
+
+        $rootScope.$broadcast('fetchActivity');
     })
