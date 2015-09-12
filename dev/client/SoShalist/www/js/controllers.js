@@ -203,6 +203,13 @@ angular.module('bucketList.controllers', ['bucketList.services'])
     };
 
 
+        $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) {
+            $scope.newTemplate = modal;
+        });
+
+        $scope.newTask = function () {
+            $scope.newTemplate.show();
+        };
 
     $scope.deleteItem = function (id) {
         $rootScope.show("Please wait... Deleting from List");
@@ -239,13 +246,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 $scope.noData = false;
             }
 
-            $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) {
-                $scope.newTemplate = modal;
-            });
 
-            $scope.newTask = function () {
-                $scope.newTemplate.show();
-            };
             $rootScope.hide();
         }).error(function (data, status, headers, config) {
             $rootScope.hide();
@@ -342,22 +343,28 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         };
 
         $scope.createNew = function () {
-			var item = this.data.item;
-        	if (!item) return;
+			var data = this.data;
+        	if (!data) return;
             $scope.modal.hide();
             $rootScope.show();
             
             //$rootScope.show("Please wait... Creating new");
 
             var form = {
-                item: item,
-                isCompleted: false,
-                user: $rootScope.getToken(),
+                type: data.type,
+                capacity: data.capacity,
+                booked: [],
+                availableOverride: null,
+                title: data.title,
+                isActive: true,
                 created: Date.now(),
-                updated: Date.now()
+                updated: Date.now(),
+                accountUsername: $rootScope.getToken(),
+                location: data.location,
+                description: data.description
             }
 
-            API.saveItem(form, form.user)
+            API.saveItem(form, form.accountUsername)
                 .success(function (data, status, headers, config) {
                     $rootScope.hide();
                     $rootScope.doRefresh(1);
@@ -383,20 +390,13 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         $rootScope.$on('fetchActivity', function(){
             API.getActivity($rootScope.getToken()).success(function (data, status, headers, config) {
                 $rootScope.show("Please wait... Processing");
-                $scope.list = data;
+                $scope.activity = data;
                 /*for (var i = 0; i < data.length; i++) {
                  if (data[i].isCompleted == false) {
                  $scope.list.push(data[i]);
                  }
                  }*/
-                if($scope.list.length == 0)
-                {
-                    $scope.noData = true;
-                }
-                else
-                {
-                    $scope.noData = false;
-                }
+
                 $rootScope.hide();
             }).error(function (data, status, headers, config) {
                 $rootScope.hide();
@@ -405,4 +405,46 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         });
 
         $rootScope.$broadcast('fetchActivity');
+
+        $scope.edit = function(){
+            $window.location.href = ('#/bucket/edit');
+        }
+    })
+
+    .controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
+
+        API.getappUser($rootScope.getToken())
+            .success(function (data, status, headers, config){
+                $scope.user = data;
+            })
+            .error(function(data, status, headers, config){
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            })
+
+        $rootScope.$on('fetchActivity', function(){
+            API.getActivity($rootScope.getToken()).success(function (data, status, headers, config) {
+                $rootScope.show("Please wait... Processing");
+                $scope.activity = data;
+                /*for (var i = 0; i < data.length; i++) {
+                 if (data[i].isCompleted == false) {
+                 $scope.list.push(data[i]);
+                 }
+                 }*/
+
+                $rootScope.hide();
+            }).error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+        });
+
+        $rootScope.$broadcast('fetchActivity');
+
+        $scope.edit = function(){
+            $window.location.href = ('#/bucket/edit');
+        }
+    })
+    .controller('editProfileCtrl', function ($rootScope, $scope, API, $window) {
+
     })
