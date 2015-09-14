@@ -246,6 +246,39 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 $scope.noData = false;
             }
 
+           $scope.reveal = [];
+
+            $scope.descriptLen = function(desc, reveal){
+
+                var text;
+                var length = 200;
+                var symbol = '';
+                if(!desc){
+                   text = '';
+                }
+                else if(reveal == false || !reveal){
+                    if(desc.length > length){
+                        symbol = '...'
+                    }
+                    text = desc.substring(0, length) + symbol;
+                }
+                else{
+                    text = desc;
+                }
+
+                return text;
+
+            }
+
+            $scope.moreDesc = function(reveal, index){
+                if(reveal == false){
+                    $scope.reveal[index] = true;
+                }
+                else{
+                    $scope.reveal[index] = false;
+                }
+            }
+
 
             $rootScope.hide();
         }).error(function (data, status, headers, config) {
@@ -256,11 +289,12 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
     $rootScope.$broadcast('fetchAll');
 
-    $scope.markCompleted = function (id) {
-        $rootScope.show("Please wait... Updating List");
-        API.putItem(id, {
-            isCompleted: true
-        }, $rootScope.getToken())
+    $scope.markBooked = function (id) {
+        $rootScope.show("Please wait... Reaching Out");
+        API.bookItem(id, {$push: {booked:{
+            email: $rootScope.getToken(),
+            when: new Date()
+        }}}, $rootScope.getToken())
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
@@ -270,11 +304,11 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             });
     };
 
-
-
-    $scope.deleteItem = function (id) {
-        $rootScope.show("Please wait... Deleting from List");
-        API.deleteItem(id, $rootScope.getToken())
+    $scope.unBooked = function (id) {
+        $rootScope.show("Please wait... Processing Your Request");
+        API.bookItem(id, {$pull: {booked:{
+            email: $rootScope.getToken()
+        }}}, $rootScope.getToken())
             .success(function (data, status, headers, config) {
                 $rootScope.hide();
                 $rootScope.doRefresh(1);
@@ -283,6 +317,27 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 $rootScope.notify("Oops something went wrong!! Please try again later");
             });
     };
+
+    $scope.checkBooked = function(item) {
+        var isBooked;
+
+        if(item.booked.length == 0) {
+            isBooked = false;
+        }
+
+       item.booked.forEach(function(user){
+
+            if(user.email == $rootScope.getToken()) {
+                isBooked = true;
+            }
+            else {
+                isBooked = false;
+            }
+        })
+        return isBooked;
+    };
+
+
 
 })
 

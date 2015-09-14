@@ -11,6 +11,7 @@ angular.module('bucketList.services', [])
             });
         };
 
+
         $rootScope.hide = function () {
             $ionicLoading.hide();
         };
@@ -104,6 +105,15 @@ angular.module('bucketList.services', [])
                     method: 'PUT',
                     params: {
                         token: email
+                    }
+                });
+            },
+            bookItem: function (id, form, email) {
+                return $http.put(base+'/api/v1/bucketList/data/item/book/' + id, form, {
+                    method: 'PUT',
+                    params: {
+                        token: email,
+                        query: form
                     }
                 });
             },
