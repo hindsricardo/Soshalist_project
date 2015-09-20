@@ -180,6 +180,39 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 $scope.newTemplate.show();
             };
             $rootScope.hide();
+
+                $scope.reveal = [];
+
+                $scope.descriptLen = function(desc, reveal){
+
+                    var text;
+                    var length = 200;
+                    var symbol = '';
+                    if(!desc){
+                        text = '';
+                    }
+                    else if(reveal == false || !reveal){
+                        if(desc.length > length){
+                            symbol = '...'
+                        }
+                        text = desc.substring(0, length) + symbol;
+                    }
+                    else{
+                        text = desc;
+                    }
+
+                    return text;
+
+                }
+
+                $scope.moreDesc = function(reveal, index){
+                    if(reveal == false){
+                        $scope.reveal[index] = true;
+                    }
+                    else{
+                        $scope.reveal[index] = false;
+                    }
+                }
         }).error(function (data, status, headers, config) {
             $rootScope.hide();
             $rootScope.notify("Oops something went wrong!! Please try again later");
@@ -342,25 +375,12 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 })
 
 
-.controller('completedCtrl', function ($rootScope,$scope, API, $window) {
-        $rootScope.$on('fetchCompleted', function () {
+.controller('reservedCtrl', function ($rootScope, $scope, API, $window) {
+        $rootScope.$on('fetchReserved', function () {
             API.getAll($rootScope.getToken()).success(function (data, status, headers, config) {
-                $scope.list = [];
-                for (var i = 0; i < data.length; i++) {
-                    if (data[i].isCompleted == true) {
-                        $scope.list.push(data[i]);
-                    }
-                };
-                if(data.length > 0 & $scope.list.length == 0)
-                {
-                    $scope.incomplete = true;
-                }
-                else
-                {
-                    $scope.incomplete= false;
-                }
-                
-                if(data.length == 0)
+                $scope.list = data;
+
+                if($scope.list.length == 0)
                 {
                     $scope.noData = true;
                 }
@@ -368,24 +388,102 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 {
                     $scope.noData = false;
                 }
+
+                $scope.reveal = [];
+
+                $scope.descriptLen = function(desc, reveal){
+
+                    var text;
+                    var length = 200;
+                    var symbol = '';
+                    if(!desc){
+                        text = '';
+                    }
+                    else if(reveal == false || !reveal){
+                        if(desc.length > length){
+                            symbol = '...'
+                        }
+                        text = desc.substring(0, length) + symbol;
+                    }
+                    else{
+                        text = desc;
+                    }
+
+                    return text;
+
+                }
+
+                $scope.moreDesc = function(reveal, index){
+                    if(reveal == false){
+                        $scope.reveal[index] = true;
+                    }
+                    else{
+                        $scope.reveal[index] = false;
+                    }
+                }
+
+
+
+
+
             }).error(function (data, status, headers, config) {
                 $rootScope.notify("Oops something went wrong!! Please try again later");
             });
 
         });
         
-        $rootScope.$broadcast('fetchCompleted');
-        $scope.deleteItem = function (id) {
-            $rootScope.show("Please wait... Deleting from List");
-            API.deleteItem(id, $rootScope.getToken())
+        $rootScope.$broadcast('fetchReserved');
+
+
+
+        $scope.markBooked = function (id) {
+            $rootScope.show("Please wait... Reaching Out");
+            API.bookItem(id, {$push: {booked:{
+                email: $rootScope.getToken(),
+                when: new Date()
+            }}}, $rootScope.getToken())
                 .success(function (data, status, headers, config) {
                     $rootScope.hide();
-                    $rootScope.doRefresh(2);
+                    $rootScope.doRefresh(1);
                 }).error(function (data, status, headers, config) {
                     $rootScope.hide();
                     $rootScope.notify("Oops something went wrong!! Please try again later");
                 });
         };
+
+        $scope.unBooked = function (id) {
+            $rootScope.show("Please wait... Processing Your Request");
+            API.bookItem(id, {$pull: {booked:{
+                email: $rootScope.getToken()
+            }}}, $rootScope.getToken())
+                .success(function (data, status, headers, config) {
+                    $rootScope.hide();
+                    $rootScope.doRefresh(1);
+                }).error(function (data, status, headers, config) {
+                    $rootScope.hide();
+                    $rootScope.notify("Oops something went wrong!! Please try again later");
+                });
+        };
+
+        $scope.checkBooked = function(item) {
+            var isBooked;
+
+            if(item.booked.length == 0) {
+                isBooked = false;
+            }
+
+            item.booked.forEach(function(user){
+
+                if(user.email == $rootScope.getToken()) {
+                    isBooked = true;
+                }
+                else {
+                    isBooked = false;
+                }
+            })
+            return isBooked;
+        };
+
     })
 
 .controller('newCtrl', function ($rootScope, $scope, API, $window) {

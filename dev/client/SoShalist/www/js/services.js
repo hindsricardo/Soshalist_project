@@ -39,6 +39,7 @@ angular.module('bucketList.services', [])
             $rootScope.$broadcast('scroll.refreshComplete');
         };
 
+
         $rootScope.setToken = function (token) {
             return $window.localStorage.token = token;
         }
@@ -50,6 +51,7 @@ angular.module('bucketList.services', [])
         $rootScope.isSessionActive = function () {
             return $window.localStorage.token ? true : false;
         }
+
 
         return {
             signin: function (form) {

@@ -4,7 +4,7 @@
 </ion-header-bar>
 <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
    <ion-refresher ng-hide="noData" on-refresh="doRefresh('1')"></ion-refresher>
-   <div class="list card" ng-repeat="item in list" >
+   <div class="list card" ng-repeat="item in list| orderBy:'- created'" >
        <div class="item list-group-item-heading">
            <p class="actions padding">
                <i ng-if="checkBooked(item) == false " class="ion-ios-heart-outline icon-actions margin" ng-click="markBooked('{{item._id}}')"></i>
