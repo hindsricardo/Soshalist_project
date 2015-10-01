@@ -48,6 +48,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         }).success(function (data) {
             $rootScope.hide();
             $rootScope.setToken(accountUsername);
+            $rootScope.setSession(email);
             $window.location.href = ('#/org/list');
         }).error(function (error) {
             $rootScope.hide();
@@ -177,7 +178,18 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             });
 
             $scope.newTask = function () {
-                $scope.newTemplate.show();
+                 $scope.newTemplate.show();
+            };
+            $ionicModal.fromTemplateUrl('templates/editItem.html',{
+                //scope: $scope
+            }).then( function (modal)
+            {
+                $scope.editTemplate = modal;
+            });
+
+            $scope.editTask = function (id) {
+                $rootScope.setVar(id);
+                $scope.editTemplate.show();
             };
             $rootScope.hide();
 
@@ -242,6 +254,17 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
         $scope.newTask = function () {
             $scope.newTemplate.show();
+        };
+
+        $ionicModal.fromTemplateUrl('templates/editItem.html',{
+            //scope: $scope
+        }).then( function (modal)
+        {
+            $scope.editTemplate = modal;
+        });
+        $scope.editTask = function (id) {
+           $rootScope.setVar(id);
+            $scope.editTemplate.show();
         };
 
     $scope.deleteItem = function (id) {
@@ -376,7 +399,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
 
 .controller('reservedCtrl', function ($rootScope, $scope, API, $window) {
-        $rootScope.$on('fetchReserved', function () {
+        $rootScope.$on('fetchAll', function () {
             API.getAll($rootScope.getToken()).success(function (data, status, headers, config) {
                 $scope.list = data;
 
@@ -432,7 +455,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
         });
         
-        $rootScope.$broadcast('fetchReserved');
+        $rootScope.$broadcast('fetchAll');
 
 
 
@@ -488,8 +511,18 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
 .controller('newCtrl', function ($rootScope, $scope, API, $window) {
         $scope.data = {
-	        item: ""
+	        item: "",
+            customFields: []
 	    };
+
+        $scope.addField = function() {
+            $scope.data.customFields.push({
+                label: this.custom.label,
+                value: this.custom.value
+            })
+
+            $scope.addSection = false;
+        }
 
         $scope.close = function () {
             $scope.modal.hide();
@@ -514,7 +547,8 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 updated: Date.now(),
                 accountUsername: $rootScope.getToken(),
                 location: data.location,
-                description: data.description
+                description: data.description,
+                customFields: $scope.data.customFields
             }
 
             API.saveItem(form, form.accountUsername)
@@ -528,6 +562,48 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 });
         };
     })
+
+.controller('editCtrl', function ($rootScope, $scope, API, $window) {
+
+    API.getOneOrg($rootScope.getVar(), $rootScope.getToken())
+        .success(function(data, status, headers, config){
+        $scope.item = data;
+            $rootScope.setVar("");
+    });
+
+    $scope.close = function () {
+        $scope.modal.hide();
+    };
+
+    $scope.createEdit = function (id) {
+        var data = this.data;
+        if (!data) return;
+        $scope.modal.hide();
+        $rootScope.show();
+
+        $rootScope.show("Please wait... Updating");
+
+        var form = {
+            capacity: data.capacity,
+            availableOverride: null,
+            title: data.title,
+            updated: Date.now(),
+            //accountUsername: $rootScope.getToken(),
+            location: data.location,
+            description: data.description
+        }
+
+        API.putItem(id, form, $rootScope.getToken())
+            .success(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.doRefresh(1);
+            })
+            .error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+    };
+})
 
     .controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
 
@@ -600,4 +676,89 @@ angular.module('bucketList.controllers', ['bucketList.services'])
     })
     .controller('editProfileCtrl', function ($rootScope, $scope, API, $window) {
 
+    })
+//ORG PROFILE FUNCTION
+    .controller('orgProfileCtrl', function ($scope ,$rootScope, API, $window) {
+        $scope.model = [];
+        $scope.addSection = false;
+        var getOrg = API.getappOrg($rootScope.getToken())
+            .success(function (data, status, headers, config){
+                $scope.org = data;
+
+                for(var i = 0; i < data.staff.length;i++) {
+                    if(data.staff[i].email == $rootScope.getSession()) {
+                        $scope.staffMember = data.staff[i];
+                    }
+                }
+            })
+            .error(function(data, status, headers, config){
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+        getOrg;
+
+
+
+
+        //fetchActivity
+        $rootScope.$on('fetchActivity', function(){
+            API.getActivity($rootScope.getToken()).success(function (data, status, headers, config) {
+                $rootScope.show("Please wait... Processing");
+                $scope.activity = data;
+                /*for (var i = 0; i < data.length; i++) {
+                 if (data[i].isCompleted == false) {
+                 $scope.list.push(data[i]);
+                 }
+                 }*/
+
+                $rootScope.hide();
+            }).error(function (data, status, headers, config) {
+                $rootScope.hide();
+                $rootScope.notify("Oops something went wrong!! Please try again later");
+            });
+        });
+
+        $rootScope.$broadcast('fetchActivity');
+
+        $scope.edit = function(){
+            $window.location.href = ('#/bucket/edit');
+        }
+
+        $scope.updatePassword = function (id, index){
+            var password = this.model[index].password;
+            $scope.org.staff[index].password = password;
+            API.updateStaff($scope.org.staff, $rootScope.getToken())
+                .success(function(data, status, headers, config) {
+                    $rootScope.notify("This members password has been updated.");
+                })
+                .error(function(data, status, headers, config){
+                    $rootScope.hide();
+                    $rootScope.notify("Oops something went wrong!! Please try again later");
+                });
+        };
+
+        $scope.createStaff = function (id) {
+            if(this.data) {
+                var staff = {
+                    email: this.data.email,
+                    password: this.data.password,
+                    level: this.data.level
+                };
+                $scope.org.staff.push(staff);
+                $scope.addSection = false;
+            }
+            else {
+                return;
+                $rootScope.notify("Please add more information");
+            }
+            API.updateStaff($scope.org.staff, $rootScope.getToken())
+                .success(function(data, status, headers, config) {
+                    $rootScope.notify("Please wait.. adding new member");
+                    getOrg;
+                })
+                .error(function(data, status, headers, config){
+                    $rootScope.hide();
+                    $rootScope.notify("Oops something went wrong!! Please try again later");
+                });
+        };
     })

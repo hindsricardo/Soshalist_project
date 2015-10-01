@@ -32,6 +32,15 @@ a
 textarea
 {
     width:100%
+    min-height: 300px;
+}
+
+.addHeading {
+    color: #cccccc;
+}
+
+.centerIcon {
+    height: 50%;
 }
 
 .ion-arrow-left-c

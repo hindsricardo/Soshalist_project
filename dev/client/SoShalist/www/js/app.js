@@ -115,5 +115,23 @@ angular.module('bucketList', ['ionic', 'bucketList.controllers', 'bucketList.ser
                     }
                 }
             })
+            .state('org.myprofile', {
+                url: '/orgmyprofile',
+                views: {
+                    'org-profile': {
+                        templateUrl: 'templates/org-myprofile.html',
+                        controller: 'orgProfileCtrl'
+                    }
+                }
+            })
+            .state('org.profileEdit', {
+                url: '/orgedit',
+                views: {
+                    'org-profileEdit': {
+                        templateUrl: 'templates/org-profileEdit.html',
+                        controller: 'orgProfileCtrl'
+                    }
+                }
+            })
         $urlRouterProvider.otherwise('/auth/signin');
     });

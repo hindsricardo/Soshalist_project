@@ -18,6 +18,7 @@ angular.module('bucketList.services', [])
 
         $rootScope.logout = function () {
             $rootScope.setToken("");
+            $rootScope.setSession("");
             $window.location.href = '#/auth/signin';
         };
 
@@ -33,19 +34,34 @@ angular.module('bucketList.services', [])
                 $rootScope.$broadcast('fetchAll');
             else if(tab == 2)
                 $rootScope.$broadcast('fetchMy');
-            else
-                $rootScope.$broadcast('fetchCompleted');
+            else if(tab == 3)
+                $rootScope.$broadcast('fetchOrg');
+            else if(tab == 4)
+                $rootScope.$broadcast('fetchActivity');
             
             $rootScope.$broadcast('scroll.refreshComplete');
         };
 
+        //for passing variable across controllers
+        //var variable = '55f77547c9d14703003499e3';
 
         $rootScope.setToken = function (token) {
             return $window.localStorage.token = token;
         }
-
         $rootScope.getToken = function () {
             return $window.localStorage.token;
+        }
+
+        $rootScope.setSession = function (session) {
+            return $window.localStorage.staff = session;
+        }
+
+        $rootScope.setVar = function(value) {
+            return window.localStorage.variable = value;
+        }
+
+        $rootScope.getVar = function() {
+            return window.localStorage.variable;
         }
 
         $rootScope.isSessionActive = function () {
@@ -94,6 +110,14 @@ angular.module('bucketList.services', [])
                     }
                 });
             },
+            getOneOrg: function (id, email) {
+                return $http.get(base+'/api/v1/bucketList/data/item/org/' + id, {
+                    method: 'GET',
+                    params: {
+                        token: email
+                    }
+                });
+            },
             saveItem: function (form, email) {
                 return $http.post(base+'/api/v1/bucketList/data/item', form, {
                     method: 'POST',
@@ -103,7 +127,7 @@ angular.module('bucketList.services', [])
                 });
             },
             putItem: function (id, form, email) {
-                return $http.put(base+'/api/v1/bucketList/data/item/' + id, form, {
+                return $http.put(base+'/api/v1/bucketList/data/item/update/' + id, form, {
                     method: 'PUT',
                     params: {
                         token: email
@@ -135,8 +159,33 @@ angular.module('bucketList.services', [])
                     }
                 })
             },
+            getappOrg: function (session) {
+                return $http.get(base+'/api/v1/bucketList/data/org', {
+                    method: 'GET',
+                    params: {
+                        token: session
+                    }
+                })
+            },
+            putappOrg: function (id, form, token) {
+                return $http.put(base+'/api/v1/bucketList/data/org/'+ id, form, {
+                    method: 'PUT',
+                    params: {
+                        token: token
+                    }
+                })
+            },
+            updateStaff: function (form, token) {
+                return $http.post(base+'/api/v1/bucketList/data/org/add', form,  {
+                    method: 'POST',
+                    params: {
+                        token: token,
+                        form: form
+                    }
+                })
+            },
             getActivity: function (session) {
-                return $http.get(base+'/api/v1/bucketList/data/activity',{
+                return $http.get(base+'/api/v1/bucketList/data/activity', {
                     method: 'GET',
                     params: {
                         token: session

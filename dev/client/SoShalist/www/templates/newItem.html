@@ -27,6 +27,34 @@
            <label class="item item-input"> <i class="icon ion-location"></i>Where
                <input type="text" class="text-center" placeholder="Address where this is available." ng-model="data.location">
            </label>
+           <h5 class="text-center addHeading">Custom Field</h5>
+           <div ng-repeat="field in data.customFields" style="margin-left: 3%">
+               <b>{{field.label}}</b> : {{field.value}}
+           </div>
        </div>
+
+        <!-- ADD FIELDS SECTION -->
+       <div ng-show="addSection" class="list card" >
+               <h5 class="text-center addHeading">Add Custom Field</h5>
+
+           <div class="row item input-group-lg">
+               <label></label>
+               <div style="padding-right: 10px; padding-left: 10px; ">
+                   <input type="text" placeholder="field label" ng-model="custom.label">
+               </div>
+                   <div style="padding-right: 10px; padding-left: 10px; ">
+                       <input type="text" placeholder="field value" ng-model="custom.value">
+                   </div>
+
+
+               <div>
+                   <i ng-click="addSection = false" class="ion-ios-close col-10"></i>
+               </div>
+               <div>
+                   <button ng-click="addField()">Add Field</button>
+               </div>
+           </div>
+       </div>
+       <button ng-click="addSection = true" class="button button-block"><i class="ion-person-add" ></i> Add Member</button>
    </ion-content>
 </div>
