@@ -1,3 +1,9 @@
+
+ion-content {
+    background-color: #ebebeb;
+    background-image: url("../img/backgroundPatt.png");
+    background-repeat: repeat;
+}
 .margin {
     margin-left: 9px;
     margin-right: 9px;
@@ -53,5 +59,8 @@ textarea
 .myprofileHeaderBox {
     background:#CEECF5;
 }
+
+
+
 
 

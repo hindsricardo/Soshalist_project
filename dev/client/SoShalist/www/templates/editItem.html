@@ -2,7 +2,7 @@
    <header class="bar bar-header bar-secondary">
       <button class="button button-clear button-primary" ng-click="close()">Cancel</button>
       <h1 class="title">List Resource</h1>
-      <button class="button button-positive" ng-click="createEdit('{{item._id}}')">Done</button>
+      <button class="button button-positive" ng-click="createEdit('{{listId}}')">Done</button>
    </header>
    <ion-content class="padding has-header">
        <label class="item item-input"> Title
@@ -20,7 +20,7 @@
            </label>
            <label class="item item-input"> <i class="icon ion-location"></i>Where
                <input type="text" class="text-center" placeholder="{{item.location}}" value="{{item.location}}" ng-model="data.location">
-           </label>{{item}}
+           </label>{{listId}}{{item}}
        </div>
    </ion-content>
 </div>

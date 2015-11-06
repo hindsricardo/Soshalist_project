@@ -154,6 +154,8 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
 .controller('myListCtrl', function ($rootScope, $scope, API, $timeout, $ionicModal, $window) {
 
+
+
         $scope.session = $rootScope.getToken(); //Define session to be used to filter view.
     $rootScope.$on('fetchMy', function(){
             API.getYourList($rootScope.getToken()).success(function (data, status, headers, config) {
@@ -180,17 +182,58 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             $scope.newTask = function () {
                  $scope.newTemplate.show();
             };
-            $ionicModal.fromTemplateUrl('templates/editItem.html',{
-                //scope: $scope
-            }).then( function (modal)
-            {
-                $scope.editTemplate = modal;
-            });
 
-            $scope.editTask = function (id) {
-                $rootScope.setVar(id);
-                $scope.editTemplate.show();
-            };
+
+                $scope.createEdit = function (item,index) {
+                    var data = this.data[index];
+                    if (!data) return;
+
+                    $rootScope.show("Please wait... Making edits");
+                    var capacity = data.capcity;
+                    var title = data.title;
+                    var location = data.location;
+                    var description = data.description;
+                    var customFields = data.customFields;
+                    if(capacity = ''|null|undefined ){
+                        capacity = item.capacity;
+                    }
+                    else if(title = ''|null|undefined){
+                        title = item.title;
+                    }
+                    else if(location = ''|null|undefined){
+                        location = item.location;
+                    }
+                    else if(description = ''|null|undefined){
+                        description = item.description;
+                    }
+                    else if(customFields = ''|null|undefined){
+                        customFields = item.customFields;
+                    }
+                    var form = {
+                        capacity: capacity,
+                        title: title,
+                        updated: Date.now(),
+                        location: location,
+                        description: description,
+                        customFields: customFields
+                    }
+
+                    API.putItem(item._id,form, form.accountUsername)
+                        .success(function (data, status, headers, config) {
+                            $rootScope.hide();
+                            $rootScope.doRefresh(1);
+                            $scope.data = {
+                                item: "",
+                                customFields: []
+                            };
+                            $scope.custom = {};
+                        })
+                        .error(function (data, status, headers, config) {
+                            $rootScope.hide();
+                            $rootScope.notify("Oops something went wrong!! Please try again later");
+                        });
+                };
+
             $rootScope.hide();
 
                 $scope.reveal = [];
@@ -254,17 +297,6 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
         $scope.newTask = function () {
             $scope.newTemplate.show();
-        };
-
-        $ionicModal.fromTemplateUrl('templates/editItem.html',{
-            //scope: $scope
-        }).then( function (modal)
-        {
-            $scope.editTemplate = modal;
-        });
-        $scope.editTask = function (id) {
-           $rootScope.setVar(id);
-            $scope.editTemplate.show();
         };
 
     $scope.deleteItem = function (id) {
@@ -514,6 +546,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 	        item: "",
             customFields: []
 	    };
+        $scope.custom = {};
 
         $scope.addField = function() {
             $scope.data.customFields.push({
@@ -522,10 +555,16 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             })
 
             $scope.addSection = false;
+            this.custom = {};
         }
 
         $scope.close = function () {
             $scope.modal.hide();
+            $scope.data = {
+                item: "",
+                customFields: []
+            };
+            $scope.custom = {};
         };
 
         $scope.createNew = function () {
@@ -555,6 +594,11 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 .success(function (data, status, headers, config) {
                     $rootScope.hide();
                     $rootScope.doRefresh(1);
+                    $scope.data = {
+                        item: "",
+                        customFields: []
+                    };
+                    $scope.custom = {};
                 })
                 .error(function (data, status, headers, config) {
                     $rootScope.hide();
@@ -562,48 +606,6 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 });
         };
     })
-
-.controller('editCtrl', function ($rootScope, $scope, API, $window) {
-
-    API.getOneOrg($rootScope.getVar(), $rootScope.getToken())
-        .success(function(data, status, headers, config){
-        $scope.item = data;
-            $rootScope.setVar("");
-    });
-
-    $scope.close = function () {
-        $scope.modal.hide();
-    };
-
-    $scope.createEdit = function (id) {
-        var data = this.data;
-        if (!data) return;
-        $scope.modal.hide();
-        $rootScope.show();
-
-        $rootScope.show("Please wait... Updating");
-
-        var form = {
-            capacity: data.capacity,
-            availableOverride: null,
-            title: data.title,
-            updated: Date.now(),
-            //accountUsername: $rootScope.getToken(),
-            location: data.location,
-            description: data.description
-        }
-
-        API.putItem(id, form, $rootScope.getToken())
-            .success(function (data, status, headers, config) {
-                $rootScope.hide();
-                $rootScope.doRefresh(1);
-            })
-            .error(function (data, status, headers, config) {
-                $rootScope.hide();
-                $rootScope.notify("Oops something went wrong!! Please try again later");
-            });
-    };
-})
 
     .controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
 

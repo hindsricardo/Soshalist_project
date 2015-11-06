@@ -19,7 +19,7 @@
            <label class="item item-input"> Capacity
                <input type="number"  class="text-center" placeholder="how many positions, rooms, beds or plates can you offer a day..." ng-model="data.capacity">
            </label>
-           <label class="item item-"> Description/Requirements
+           <label class="item "> Description/Requirements
                <textarea  class="text-center" placeholder="Provide detail and spell out the requirements" ng-model="data.description">
 
                </textarea>
@@ -34,7 +34,7 @@
        </div>
 
         <!-- ADD FIELDS SECTION -->
-       <div ng-show="addSection" class="list card" >
+       <div class="list card" >
                <h5 class="text-center addHeading">Add Custom Field</h5>
 
            <div class="row item input-group-lg">
@@ -45,16 +45,10 @@
                    <div style="padding-right: 10px; padding-left: 10px; ">
                        <input type="text" placeholder="field value" ng-model="custom.value">
                    </div>
-
-
-               <div>
-                   <i ng-click="addSection = false" class="ion-ios-close col-10"></i>
-               </div>
                <div>
                    <button ng-click="addField()">Add Field</button>
                </div>
            </div>
        </div>
-       <button ng-click="addSection = true" class="button button-block"><i class="ion-person-add" ></i> Add Member</button>
    </ion-content>
 </div>

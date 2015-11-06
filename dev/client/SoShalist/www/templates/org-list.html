@@ -1,36 +1,92 @@
-<ion-header-bar class="bar bar-header bar-positive">
+<ion-header-bar class="bar bar-header bar-dark">
         <div class="buttons button-clear">
             <button class="button" ng-click="newTask()">New</button>
         </div>
-       <h1 class="title">My List</h1>
+       <h1 class="title">{{list[0].accountUsername|uppercase}}'s List</h1>
        <button class="button button-clear" ng-click="logout()">Logout</button>
 </ion-header-bar>
 <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
    <ion-refresher ng-hide="noData" on-refresh="doRefresh('1')"></ion-refresher>
-   <div class="list card" ng-repeat="item in list| orderBy:'- created'" >
-       <div class="item list-group-item-heading">
+   <div class="list card" ng-repeat="item in list| orderBy:'- created'">
+       <div class="item list-group-item-heading" style="background-color: #ebebeb;">
            <p class="actions padding">
-               <i class="ion-edit icon-actions margin" ng-click="editTask(item._id)"></i>
+
            </p>
            <h2>
-               {{item.type}}
+               {{item.type |uppercase}}
+
            </h2>
-           <p>
-               {{ item.title}}
+           <p ng-show="!edit[$index].editTitle">
+               {{item.title}}
+               <i ng-show="!edit[$index].edit" class="ion-edit icon-actions margin" ng-click="edit[$index].editTitle = true" ></i>
+
            </p>
+           <label ng-show="edit[$index].editTitle" class="item item-input"> Title
+               <input type="text" class="text-center" ng-model="data[$index].title" placeholder=" {{item.title}}">
+            </label>
+           <i ng-show="edit[$index].editTitle" class="ion-android-checkmark-circle icon-actions margin" ng-click="edit[$index].editTitle = false" ></i>
+           <i ng-show="edit[$index].editTitle" class="ion-close-round icon-actions margin" ng-click="edit[$index].editTitle = false" ></i>
+
+           <label  ng-show="edit[$index].edit" class="item item-input"> Capacity
+               <input type="number"  class="text-center" placeholder="{{item.capacity}}" ng-model="data[$index].capacity">
+           </label>
+
+           <label ng-show="edit[$index].edit" class="item "> Description/Requirements
+               <textarea style="width:100%; height:8em"  class="text-center" placeholder="{{item.description}}" ng-model="data[$index].description">
+
+               </textarea>
+           </label>
+
+           <label ng-show="edit[$index].edit" class="item item-input"> <i class="icon ion-location"></i>Where
+               <input type="text" class="text-center" placeholder="{{item.location}}" ng-model="data[$index].location">
+           </label>
+
+
+           <div ng-show="edit[$index].edit" class="list card" >
+               <h5 class="text-center addHeading">Add Custom Field</h5>
+
+               <div class="row item input-group-lg">
+                   <label></label>
+                   <div style="padding-right: 10px; padding-left: 10px; ">
+                       <input type="text" placeholder="field label" ng-model="custom[$index].label">
+                   </div>
+                   <div style="padding-right: 10px; padding-left: 10px; ">
+                       <input type="text" placeholder="field value" ng-model="custom[$index].value">
+                   </div>
+                   <div>
+                       <button ng-click="addField($index)">Add Field</button>
+                   </div>
+               </div>
+
+               <h5 class="text-center addHeading">Current Custom Fields</h5>
+               <div class="text-left" ng-repeat="field in item.customFields" style="margin-left: 3%">
+                   {{$index + 1}}. <b>{{field.label}}</b> : {{field.value}}
+               </div>
+               <div ng-repeat="field in data[$index].customFields" style="margin-left: 3%">
+                   <i>{{field.label}}</b> : {{field.value}}</i>
+               </div>
+           </div>
+
        </div>
-       <div class="item item-body">
+
+
+       <div class="item item-body" ng-if="!edit[$index].edit">
            <p ng-click="moreDesc(reveal[$index], $index)">
                <i class="icon ion-arrow-right-b" ng-if="reveal[$index] == false || !reveal[$index] && item.description"></i>
                <i class="icon ion-arrow-down-b" ng-if="reveal[$index] == true && item.description"></i>
                {{descriptLen(item.description, reveal[$index])}}
+                <div ng-repeat="customs in item.customFields" style="margin-left: 2em">
+                    <p>
+                        <b>{{customs.label}}:</b> {{customs.value}}
+                    </p>
+                </div>
            </p>
            <p>
                <a href="#" class="subdued">{{item.booked.length}} Reach Outs</a>
            </p>
        </div>
        <div class="item tabs tabs-secondary tabs-icon-left">
-           <a class="tab-item" href="http://maps.google.com/?q={{item.location}}" target="_blank">
+           <a class="tab-item" href="http://maps.google.com/?q={{item.location}}" target="_blank" ng-if="!edit[$index].edit">
                <i class="icon ion-location"></i>
                {{item.location}}
            </a>
