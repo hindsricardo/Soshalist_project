@@ -6,7 +6,7 @@
        <button class="button button-clear" ng-click="logout()">Logout</button>
 </ion-header-bar>
 <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
-   <ion-refresher ng-hide="noData" on-refresh="doRefresh('1')"></ion-refresher>
+   <ion-refresher ng-hide="noData" on-refresh="doRefresh('2')"></ion-refresher>
    <div class="list card" ng-repeat="item in list| orderBy:'- created'">
        <div class="item list-group-item-heading" style="background-color: #ebebeb;">
            <p class="actions padding">
@@ -24,7 +24,7 @@
            <label ng-show="edit[$index].editTitle" class="item item-input"> Title
                <input type="text" class="text-center" ng-model="data[$index].title" placeholder=" {{item.title}}">
             </label>
-           <i ng-show="edit[$index].editTitle" class="ion-android-checkmark-circle icon-actions margin" ng-click="edit[$index].editTitle = false" ></i>
+           <i ng-show="edit[$index].editTitle" class="ion-android-checkmark-circle icon-actions margin" ng-click="createEdit(item,$index);edit[$index].editTitle = false; refresh" ></i>
            <i ng-show="edit[$index].editTitle" class="ion-close-round icon-actions margin" ng-click="edit[$index].editTitle = false" ></i>
 
            <label  ng-show="edit[$index].edit" class="item item-input"> Capacity

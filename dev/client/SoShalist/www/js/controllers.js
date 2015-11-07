@@ -155,7 +155,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 .controller('myListCtrl', function ($rootScope, $scope, API, $timeout, $ionicModal, $window) {
 
 
-
+        $scope.refresh = $rootScope.doRefresh('2');
         $scope.session = $rootScope.getToken(); //Define session to be used to filter view.
     $rootScope.$on('fetchMy', function(){
             API.getYourList($rootScope.getToken()).success(function (data, status, headers, config) {
@@ -197,16 +197,16 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     if(capacity = ''|null|undefined ){
                         capacity = item.capacity;
                     }
-                    else if(title = ''|null|undefined){
+                    else if(title == '' || title == null || title == undefined || title == 0){
                         title = item.title;
                     }
-                    else if(location = ''|null|undefined){
+                    else if(location == ''|| location == null|| location ==undefined|| location == 0){
                         location = item.location;
                     }
-                    else if(description = ''|null|undefined){
+                    else if(description == ''|| description == null|| description == undefined|| description == 0){
                         description = item.description;
                     }
-                    else if(customFields = ''|null|undefined){
+                    else if(customFields == ''|| customFields ==null|| customFields == undefined|| customFields == 0){
                         customFields = item.customFields;
                     }
                     var form = {
@@ -215,6 +215,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                         updated: Date.now(),
                         location: location,
                         description: description,
+                        accountUsername: $rootScope.getToken(),
                         customFields: customFields
                     }
 
@@ -222,11 +223,8 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                         .success(function (data, status, headers, config) {
                             $rootScope.hide();
                             $rootScope.doRefresh(1);
-                            $scope.data = {
-                                item: "",
-                                customFields: []
-                            };
-                            $scope.custom = {};
+                            this.data[index] = {};
+                            $rootScope.doRefresh('2');
                         })
                         .error(function (data, status, headers, config) {
                             $rootScope.hide();
@@ -289,6 +287,11 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 $rootScope.notify("Oops something went wrong!! Please try again later");
             });
     };
+
+        $scope.deleteItem =  function(id) {
+            $rootScope.show("Please wait... Deleting Item");
+            API.deleteItem(id,$rootScope.getToken())
+        }
 
 
         $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) {
