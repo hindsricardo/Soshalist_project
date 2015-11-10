@@ -175,12 +175,12 @@ angular.module('bucketList.services', [])
                     }
                 })
             },
-            updateStaff: function (form, token) {
-                return $http.post(base+'/api/v1/bucketList/data/org/add', form,  {
-                    method: 'POST',
+            updateStaff: function (id, form, session) {
+                return $http.post(base+'/api/v1/bucketList/data/staff/'+id,  {
+                    method: 'PUT',
                     params: {
-                        token: token,
-                        form: form
+                        token: session,
+                        query: form
                     }
                 })
             },

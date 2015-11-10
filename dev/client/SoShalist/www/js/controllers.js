@@ -155,9 +155,8 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 .controller('myListCtrl', function ($rootScope, $scope, API, $timeout, $ionicModal, $window) {
 
 
-        $scope.refresh = $rootScope.doRefresh('2');
         $scope.session = $rootScope.getToken(); //Define session to be used to filter view.
-    $rootScope.$on('fetchMy', function(){
+        $rootScope.$on('fetchMy', function(){
             API.getYourList($rootScope.getToken()).success(function (data, status, headers, config) {
             $rootScope.show("Please wait... Processing");
             $scope.list = data;
@@ -193,8 +192,13 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     var title = data.title;
                     var location = data.location;
                     var description = data.description;
-                    var customFields = data.customFields;
-                    if(capacity = ''|null|undefined ){
+                    item.customFields.push({
+                        label: data.label,
+                        value: data.value
+                    });
+                    var customFields = item.customFields;
+
+                    if(capacity == ''|| capacity == null || capacity == undefined || capacity == 0 ){
                         capacity = item.capacity;
                     }
                     else if(title == '' || title == null || title == undefined || title == 0){
@@ -206,8 +210,10 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     else if(description == ''|| description == null|| description == undefined|| description == 0){
                         description = item.description;
                     }
-                    else if(customFields == ''|| customFields ==null|| customFields == undefined|| customFields == 0){
-                        customFields = item.customFields;
+                    else if(customFields[customFields.length - 1] == '' ||  customFields[customFields.length - 1] == null || customFields[customFields.length - 1] == undefined || customFields[customFields.length - 1] == 0)
+                    {
+
+                        customFields.splice(customFields.length - 1);
                     }
                     var form = {
                         capacity: capacity,
@@ -222,9 +228,12 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     API.putItem(item._id,form, form.accountUsername)
                         .success(function (data, status, headers, config) {
                             $rootScope.hide();
-                            $rootScope.doRefresh(1);
-                            this.data[index] = {};
                             $rootScope.doRefresh('2');
+                            this.data[index] = {};
+                            $scope.list[index].title = title;
+                            $scope.list[index].location = location;
+                            $scope.list[index].description = description;
+                            $scope.list[index].customFields = customFields;
                         })
                         .error(function (data, status, headers, config) {
                             $rootScope.hide();
@@ -288,11 +297,6 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             });
     };
 
-        $scope.deleteItem =  function(id) {
-            $rootScope.show("Please wait... Deleting Item");
-            API.deleteItem(id,$rootScope.getToken())
-        }
-
 
         $ionicModal.fromTemplateUrl('templates/newItem.html', function (modal) {
             $scope.newTemplate = modal;
@@ -302,16 +306,18 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             $scope.newTemplate.show();
         };
 
-    $scope.deleteItem = function (id) {
-        $rootScope.show("Please wait... Deleting from List");
-        API.deleteItem(id, $rootScope.getToken())
-            .success(function (data, status, headers, config) {
-                $rootScope.hide();
-                $rootScope.doRefresh(2);
-            }).error(function (data, status, headers, config) {
-                $rootScope.hide();
-                $rootScope.notify("Oops something went wrong!! Please try again later");
-            });
+    $scope.deleteItems = function (id) {
+
+                $rootScope.show("Please wait... Deleting from List");
+
+                API.deleteItem(id, $rootScope.getToken())
+                    .success(function (data, status, headers, config) {
+                        $rootScope.hide();
+                        $rootScope.doRefresh(2);
+                    }).error(function (data, status, headers, config) {
+                    $rootScope.hide();
+                    $rootScope.notify("Oops something went wrong!! Please try again later");
+                });
     };
 
 })
@@ -644,8 +650,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             $window.location.href = ('#/bucket/edit');
         }
     })
-
-    .controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
+.controller('myProfileCtrl', function ($rootScope, $scope, API, $window) {
 
         API.getappUser($rootScope.getToken())
             .success(function (data, status, headers, config){
@@ -679,9 +684,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             $window.location.href = ('#/bucket/edit');
         }
     })
-    .controller('editProfileCtrl', function ($rootScope, $scope, API, $window) {
 
-    })
 //ORG PROFILE FUNCTION
     .controller('orgProfileCtrl', function ($scope ,$rootScope, API, $window) {
         $scope.model = [];
@@ -725,14 +728,10 @@ angular.module('bucketList.controllers', ['bucketList.services'])
 
         $rootScope.$broadcast('fetchActivity');
 
-        $scope.edit = function(){
-            $window.location.href = ('#/bucket/edit');
-        }
-
-        $scope.updatePassword = function (id, index){
+        $scope.updatePassword = function (id, index, org){
             var password = this.model[index].password;
-            $scope.org.staff[index].password = password;
-            API.updateStaff($scope.org.staff, $rootScope.getToken())
+            org.staff[index].password = password;
+            API.updateStaff(id, org.staff, $rootScope.getToken())
                 .success(function(data, status, headers, config) {
                     $rootScope.notify("This members password has been updated.");
                 })
@@ -742,24 +741,23 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 });
         };
 
-        $scope.createStaff = function (id) {
-            if(this.data) {
+        $scope.createStaff = function (id, org) {
+            if(this.model[0]) {
                 var staff = {
-                    email: this.data.email,
-                    password: this.data.password,
-                    level: this.data.level
+                    email: this.model[0].email,
+                    password: this.model[0].password,
+                    level: this.model[0].level
                 };
-                $scope.org.staff.push(staff);
-                $scope.addSection = false;
+                org.staff.push(staff);
             }
             else {
                 return;
-                $rootScope.notify("Please add more information");
+                    $rootScope.notify("Please add more information");
             }
-            API.updateStaff($scope.org.staff, $rootScope.getToken())
+            API.updateStaff(id, org, $rootScope.getToken())
                 .success(function(data, status, headers, config) {
                     $rootScope.notify("Please wait.. adding new member");
-                    getOrg;
+                    //getOrg;
                 })
                 .error(function(data, status, headers, config){
                     $rootScope.hide();
