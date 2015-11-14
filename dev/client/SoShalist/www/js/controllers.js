@@ -1,5 +1,17 @@
 angular.module('bucketList.controllers', ['bucketList.services'])
 
+.filter('Archived', function() {
+    return function(items) {
+        var filtered = [];
+        angular.forEach(items, function(item) {
+            if( item.archived == false || item.archived == undefined ) {
+                filtered.push(item);
+            }
+        });
+        return filtered;
+    };
+})
+
 .controller('SignInCtrl',['$rootScope', '$scope', 'API', '$window', function ($rootScope, $scope, API, $window) {
     // if the user is already logged in, take him to his bucketlist
     if ($rootScope.isSessionActive()) {
@@ -159,12 +171,16 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         $rootScope.$on('fetchMy', function(){
             API.getYourList($rootScope.getToken()).success(function (data, status, headers, config) {
             $rootScope.show("Please wait... Processing");
-            $scope.list = data;
-            /*for (var i = 0; i < data.length; i++) {
-                if (data[i].isCompleted == false) {
-                    $scope.list.push(data[i]);
+            $scope.archivedList = [];
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].archived == true ) {
+                    $scope.archivedList.push(data[i]);
+                    data.slice(i, 1);
                 }
-            };*/
+
+            };
+                $scope.list = data;
+
             if($scope.list.length == 0)
             {
                 $scope.noData = true;
@@ -181,6 +197,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             $scope.newTask = function () {
                  $scope.newTemplate.show();
             };
+                $scope.archive = false;
 
 
                 $scope.createEdit = function (item,index) {
@@ -192,6 +209,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     var title = data.title;
                     var location = data.location;
                     var description = data.description;
+                    var archive = data.archive;
                     item.customFields.push({
                         label: data.label,
                         value: data.value
@@ -210,10 +228,14 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     else if(description == ''|| description == null|| description == undefined|| description == 0){
                         description = item.description;
                     }
-                    else if(customFields[customFields.length - 1] == '' ||  customFields[customFields.length - 1] == null || customFields[customFields.length - 1] == undefined || customFields[customFields.length - 1] == 0)
+                    else if(customFields[customFields.length - 1] == '' ||  customFields[customFields.length - 1] == null || customFields[customFields.length - 1] == undefined
+                        || customFields[customFields.length - 1] == 0 || customFields[customFields.length - 1] == {})
                     {
 
-                        customFields.splice(customFields.length - 1);
+                        customFields.splice(customFields.length - 1, 1);
+                    }
+                    else if(archive == undefined || archive == null || archive == 0) {
+                        archive = false
                     }
                     var form = {
                         capacity: capacity,
@@ -221,6 +243,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                         updated: Date.now(),
                         location: location,
                         description: description,
+                        archived : archive,
                         accountUsername: $rootScope.getToken(),
                         customFields: customFields
                     }
@@ -591,6 +614,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                 availableOverride: null,
                 title: data.title,
                 isActive: true,
+                archived: false,
                 created: Date.now(),
                 updated: Date.now(),
                 accountUsername: $rootScope.getToken(),

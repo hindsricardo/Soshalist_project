@@ -7,10 +7,10 @@
 </ion-header-bar>
 <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
    <ion-refresher ng-hide="noData" on-refresh="doRefresh('2')"></ion-refresher>
-   <div class="list card" ng-repeat="item in list| orderBy:'- created'">
+   <div class="list card" ng-repeat="item in list| Archived | orderBy:'- created'">
        <div class="item list-group-item-heading" style="background-color: #ebebeb;">
            <p class="actions padding">
-               <i class="ion-trash-a icon-actions margin" ng-click="deleteItems(item._id)"></i>
+               <i class="ion-filing icon-actions margin" ng-click="data[$index].archive = true; createEdit(item,$index)"></i>
            </p>
            <h2>
                {{item.type |uppercase}}
@@ -52,7 +52,7 @@
 
                 <!-- CUSTOMFIELDS SECTION -->
                <div ng-show="!edit[$parent.$index].editCustom" ng-repeat="customs in item.customFields" style="margin-left: 2em">
-                    <p>
+                    <p ng-show="customs.label">
                         <b>{{customs.label}}:</b> {{customs.value}}
                     </p>
                 </div>
