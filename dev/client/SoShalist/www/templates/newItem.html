@@ -9,12 +9,8 @@
            <input type="text" class="text-center" placeholder=" Give it a name that makes them understand what this is..." ng-model="data.title">
        </label>
        <div class="list">
-           <label class="item item-select"> Type
-               <select ng-model="data.type" class="text-center" placeholder="">
-                   <option value="food">Food</option>
-                   <option value="housing">Housing</option>
-                   <option value="job">Job</option>
-               </select>
+           <label class="item"> Searchable Tags
+               <tags-input ng-model="tags"></tags-input>
            </label>
            <label class="item item-input"> Capacity
                <input type="number"  class="text-center" placeholder="how many positions, rooms, beds or plates can you offer a day..." ng-model="data.capacity">
