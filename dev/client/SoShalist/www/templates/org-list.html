@@ -12,14 +12,22 @@
            <p class="actions padding">
                <i class="ion-filing icon-actions margin" ng-click="data[$index].archive = true; createEdit(item,$index)"></i>
            </p>
-           <h2>
-               {{item.type |uppercase}}
+           <span ng-show="!edit[$index].editType">
+               <span class="button button-outline button-dark" style="margin-right:1em" ng-repeat="tag in item.type">
+                   {{tag.text |uppercase}}
+               </span>
+           </span>
+           <i ng-show="!edit[$index].editType" class="ion-edit icon-actions margin" ng-click="edit[$index].editType = true" ></i>
 
-           </h2>
+           <label ng-show="edit[$index].editType" class="item"> Searchable Tags
+               <tags-input ng-model="data[$index].tags"></tags-input>
+           </label>
+           <i ng-show="edit[$index].editType" class="ion-android-checkmark-circle icon-actions margin" ng-click="createEdit(item,$index);edit[$index].editType = false; refresh" ></i>
+           <i ng-show="edit[$index].editType" class="ion-close-round icon-actions margin" ng-click="edit[$index].editType = false" ></i>
+
            <p ng-show="!edit[$index].editTitle">
                {{item.title |uppercase}}
                <i ng-show="!edit[$index].editTitle" class="ion-edit icon-actions margin" ng-click="edit[$index].editTitle = true" ></i>
-
            </p>
            <label ng-show="edit[$index].editTitle" class="item item-input"> Title
                <input type="text" class="text-center" ng-model="data[$index].title" placeholder=" {{item.title}}">

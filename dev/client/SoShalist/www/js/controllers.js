@@ -205,6 +205,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     if (!data) return;
 
                     $rootScope.show("Please wait... Making edits");
+                    var type = data.tags
                     var capacity = data.capcity;
                     var title = data.title;
                     var location = data.location;
@@ -237,7 +238,11 @@ angular.module('bucketList.controllers', ['bucketList.services'])
                     else if(archive == undefined || archive == null || archive == 0) {
                         archive = false
                     }
+                    else if(type == undefined || type == null || type == 0){
+                        type = item.type;
+                    }
                     var form = {
+                        type: type,
                         capacity: capacity,
                         title: title,
                         updated: Date.now(),
@@ -608,7 +613,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             //$rootScope.show("Please wait... Creating new");
 
             var form = {
-                type: data.type,
+                type: data.tags,
                 capacity: data.capacity,
                 booked: [],
                 availableOverride: null,

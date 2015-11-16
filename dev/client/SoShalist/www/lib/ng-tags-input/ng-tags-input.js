@@ -198,7 +198,7 @@ tagsInput.directive('tagsInput', ["$timeout", "$document", "$window", "tagsInput
             tagsInputConfig.load('tagsInput', $scope, $attrs, {
                 template: [String, 'ngTagsInput/tag-item.html'],
                 type: [String, 'text', validateType],
-                placeholder: [String, 'Click Return to Add a tag'],
+                placeholder: [String, 'Click Return to Add tag'],
                 tabindex: [Number, null],
                 removeTagSymbol: [String, String.fromCharCode(215)],
                 replaceSpacesWithDashes: [Boolean, true],
