@@ -2,8 +2,9 @@
     <button ng-show="!hasFilters" class="button button-clear" ng-click="hasFilters = true"><i class="ion-search"></i></button>
     <button ng-show="hasFilters" class="button button-clear" ng-click="hasFilters = false; searchText = null"><i class="ion-search"></i></button>
     <div class="bar bar-header item-input-inset" ng-show="hasFilters">
-            <input class="input-small" type="search" placeholder="Search Resources" ng-model="searchText">
+            <input class="input-large" type="search" placeholder="Search Resources" ng-model="searchText">
     </div>
+    <h2 class="title"></h2>
        <button class="button button-clear"  ng-click="logout()">Logout</button>
 </ion-header-bar>
 <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
