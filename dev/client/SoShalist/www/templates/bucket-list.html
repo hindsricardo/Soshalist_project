@@ -15,12 +15,13 @@
                <i ng-if="checkBooked(item) == false " class="ion-ios-heart-outline icon-actions margin" ng-click="markBooked('{{item._id}}')"></i>
                <i ng-if="checkBooked(item) == true " class="ion-ios-heart icon-actions margin" ng-click="unBooked('{{item._id}}')"></i>
            </p>
-           <h2>
-               {{item.type}}
-           </h2>
-           <p>
-               {{ item.title}}
-           </p>
+           <span class="button button-outline button-dark" style="margin-right:1em" ng-repeat="tag in item.type" >
+                   {{tag.text |uppercase}}
+           </span>
+
+           <h4 style="margin-top:1em">
+               {{ item.title|uppercase}}
+           </h4>
        </div>
       <div class="item item-body">
           <p ng-click="moreDesc(reveal[$index], $index)">
