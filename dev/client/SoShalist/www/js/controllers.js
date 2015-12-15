@@ -104,7 +104,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         	{
         		$rootScope.notify("Oops something went wrong, Please try again!");
         	}
-            
+
         });
     }
         $scope.createOrg = function () {
@@ -523,7 +523,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
             });
 
         });
-        
+
         $rootScope.$broadcast('fetchAll');
 
 
@@ -609,7 +609,7 @@ angular.module('bucketList.controllers', ['bucketList.services'])
         	if (!data) return;
             $scope.modal.hide();
             $rootScope.show();
-            
+
             //$rootScope.show("Please wait... Creating new");
 
             var form = {

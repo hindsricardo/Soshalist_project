@@ -1,4 +1,9 @@
 angular.module('bucketList', ['ionic', 'bucketList.controllers', 'bucketList.services','ngCordova','ngTagsInput'])
+    .run(function($cordovaSplashscreen) {
+      setTimeout(function() {
+        $cordovaSplashscreen.hide()
+      }, 5000)
+    })
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {
             if (window.StatusBar) {

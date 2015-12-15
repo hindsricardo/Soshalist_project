@@ -1,5 +1,5 @@
-<ion-header-bar class="bar-positive">
-   <h1 class="title">Reserved</h1>
+<ion-header-bar class="bar-dark">
+   <h1 class="title">Your Favorites</h1>
    <button class="button button-clear" ng-click="logout()">Logout</button>
 </ion-header-bar>
 <ion-content class="has-header padding" has-tabs="true" on-refresh="onRefresh()">
@@ -10,11 +10,11 @@
                 <i ng-if="checkBooked(item) == false " class="ion-ios-heart-outline icon-actions margin" ng-click="markBooked('{{item._id}}')"></i>
                 <i ng-if="checkBooked(item) == true " class="ion-ios-heart icon-actions margin" ng-click="unBooked('{{item._id}}')"></i>
             </p>
-            <h2>
-                {{item.type}}
-            </h2>
+            <span class="button button-outline button-dark" style="margin-right:1em" ng-repeat="tag in item.type" >
+                    {{tag.text |uppercase}}
+            </span>
             <p>
-                {{ item.title}}
+                <b>{{ item.title}}</b>
             </p>
         </div>
         <div class="item item-body">
